@@ -80,4 +80,4 @@ function startCalls(){
 	setInterval(shopifyPostCall,10000);
 }
 
-module.exports = {shopifyGetCall,shopifyPostCall,startCalls};
+module.exports = {startCalls};

@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const {PORT} = require('./config');
 const app = express();
-const {shopifyGetCall,shopifyPostCall,startCalls} = require('./shopifyCalls');
+const {startCalls} = require('./shopifyCalls');
 let server;
 
 
