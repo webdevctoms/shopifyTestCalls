@@ -2,8 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const {PORT} = require('./config');
 const app = express();
-
+const {shopifyGetCall} = require('./shopifyCalls');
 let server;
+
 
 function runServer(databaseUrl, port = PORT) {
 
@@ -11,6 +12,7 @@ function runServer(databaseUrl, port = PORT) {
    
       server = app.listen(port, () => {
         console.log(`Your app is listening on port ${port}`);
+        shopifyGetCall();
         resolve();
       })
         .on('error', err => {
