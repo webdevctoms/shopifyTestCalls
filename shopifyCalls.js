@@ -2,6 +2,16 @@ require('dotenv').config();
 const request = require('request');
 const {SURL,USERK,USERP} = require('./config');
 let counter = 0;
+/**********************************************
+
+can make 4 calls/second with shopify plus
+retrieve 250 objects with one api call
+Use web hooks?
+	does this need to also send data to ERP system?
+	or can we just make request to ERP and then use code on ERP side to update
+
+************************************************/
+
 //callback for shopify post request
 function shopifyCallbackPost(error,response,body){
 	//const parsedBody = JSON.parse(body);
@@ -65,7 +75,8 @@ function shopifyPostCall(){
 			    "product_type": "Snowboard",
 			    "images": [
 			      {
-			        "src": "https://system.na1.netsuite.com/core/media/media.nl?id=789896&c=3760720&h=686ec05f7a777e1168d0&vid=-TglkdtpArucn7FT&chrole=17&ck=8KUe28BpAmur5O9m&cktime=158172&cart=32352&promocode=&promocodeaction=overwrite&sj=toFWmNtUpOtHop9BLqLkOQRin%3B1543347683666&gc=clear"
+			        "src": "https://system.na1.netsuite.com/core/media/media.nl?id=789896&c=3760720&h=686ec05f7a777e1168d0&vid=-TglkdtpArucn7FT&chrole=17&ck=8KUe28BpAmur5O9m&cktime=158172&cart=32352&promocode=&promocodeaction=overwrite&sj=toFWmNtUpOtHop9BLqLkOQRin%3B1543347683666&gc=clear",
+			        "alt":"test alt text"
 			      }
 			    ]
 			  }
@@ -74,10 +85,15 @@ function shopifyPostCall(){
 
 	request(options,shopifyCallbackPost);
 }
+//test function to try running code while calls are being made
+function testThing(str){
+	console.log("test thing" + str);
+}
 
 function startCalls(){
 	setInterval(shopifyGetCall,10000);
 	setInterval(shopifyPostCall,10000);
+	//setInterval(testThing, 2000);
 }
 
 module.exports = {startCalls};
