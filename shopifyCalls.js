@@ -13,6 +13,8 @@ let putData;
 let postData;
 
 /**********************************************
+This version running off of running async get request for ERP and Shopify
+other version idea get ERP data then get Shopify data  then compare
 
 can make 4 calls/second with shopify plus
 retrieve 250 objects with one api call
