@@ -2,7 +2,15 @@ require('dotenv').config();
 const request = require('request');
 const {SURL,USERK,USERP,endURL,cKey} = require('./config');
 const {sortData} = require('./utils/sortData');
+const {addSeconds} = require('./utils/addTime');
 let counter = 0;
+//use these to store the data from get calls
+let erpSortedData;
+let shopifySortedData;
+//update/post arrays for the different shopify calls
+let putData;
+let postData;
+
 /**********************************************
 
 can make 4 calls/second with shopify plus
@@ -54,9 +62,15 @@ function erpCallbackGet(error,response,body){
 			console.log("custom error",parsedBody);
 			throw "custom error"
 		}
-		console.log("erp data ",parsedBody);
+		//console.log("erp data ",parsedBody);
 		const sortedBody = sortData(parsedBody.data);
+		//will have to change second usage to minutes in production
+		const currentTime = new Date().getSeconds();
+		//console.log("current seconds", currentTime);
+		
+		sortedBody.push(currentTime);
 		console.log("sorted data", sortedBody);
+		erpSortedData = sortedBody.slice();
 	}
 	catch(err){
 		console.log("A error occured",err);
@@ -123,6 +137,23 @@ function getERPData(){
 	request(options,erpCallbackGet);
 }
 
+function compareData(){
+	try{
+		let today = new Date()
+		let currentTime = today.getSeconds()
+		console.log("data time added erp ",erpSortedData[erpSortedData.length -1]);
+		const expectedTime = addSeconds(erpSortedData[erpSortedData.length -1],10);
+		console.log("Expected time for new data", expectedTime);
+		console.log("Current time", today.getSeconds());
+		if(expectedTime === currentTime){
+			console.log("Time to compare data");
+		}
+	}
+	catch(err){
+		console.log("error comparing data", err);
+	}
+}
+
 //test function to try running code while calls are being made
 function testThing(str){
 	console.log("test thing" + str);
@@ -138,6 +169,7 @@ function startCalls(){
 	setInterval(getERPData,10000);
 	//setInterval(shopifyPostCall,10000);
 	//setInterval(testThing, 2000);
+	setInterval(compareData,2000);
 }
 
 module.exports = {startCalls};

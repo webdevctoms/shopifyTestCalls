@@ -2,10 +2,10 @@
 //might not need this if ERP data sorted
 const sortData = function(arr){
 	return arr.sort((a,b) => {
-		if(a.name > b.name){
+		if(a.name.toLowerCase() > b.name.toLowerCase() ){
 			return 1;
 		}
-		if(a.name < b.name){
+		if(a.name.toLowerCase()  < b.name.toLowerCase() ){
 			return -1;
 		}
 	});
