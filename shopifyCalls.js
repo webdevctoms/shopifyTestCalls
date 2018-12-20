@@ -147,7 +147,34 @@ function getERPData(){
 	request(options,erpCallbackGet);
 }
 
-function compareData(){
+function compareData(arr1,arr2){
+	//arr1 has to be ERP and arr2 has to be Shopify data, because of how the object naming,will have to change when using real ERP API
+	let checkedCounter = 0;
+	for(let i = 0;i < arr1.length; i++){
+
+		if (checkedCounter === arr2.length - 1){
+
+		}
+
+		for(let k =0; k < arr2.length; k++){
+			if(arr2[k].productChecked){
+				continue;
+			}
+			else if(arr2[k].title === arr1[i].name){
+				arr2[k].productChecked = true;
+				putData.push(arr1[i]);
+			}
+			else if(!(arr2[k].title < arr1[i].name)){
+				//this condition means that the name from arr2 does not come alphabetically before the current arr1 item name
+			}
+			else if(arr2[k].title < arr1[i].name){
+				//this condition means that the arr2 name comes alphabetically after the current item. Therefore should be able to break the loop,if the name has not been found yet
+			}
+		}
+	}
+}
+
+function compareDataInit(){
 	//catch error thrown by initialization of sorted array variables
 	try{
 		const today = new Date();
@@ -179,29 +206,7 @@ function compareData(){
 			console.log("time to compare data");
 			executeTime.updated = true;
 		}
-		/*
-		if(currentTime === expectedTimeERP || currentTime === expectedTimeShopify){
-			console.log("Time to compare data current time equal to expected");
-		}
-		//==================
-		//Can possibly remove this section if above check handles everything
-		//===================
-		if(subtractTime(expectedTimeERP,expectedTimeShopify,currentTime)){
-			console.log("Erp finished before shopify");
-			//use shopify end time to determine when to start comparing
-			expectedTime = expectedTimeShopify;
-		}
-		else{
-			console.log("Shopify finished before ERP");
-			//use erp end time to determine when to start comparing
-			expectedTime = expectedTimeERP;
-		}
-		//this would handle if this function was called at the same time the data was added,probably will never get called in production
-		if(expectedTime === currentTime){
-			console.log("final expected time",expectedTime);
-			console.log("Time to compare data");
-		}
-		*/
+
 	}
 	
 	catch(err){
@@ -223,7 +228,7 @@ function startCalls(){
 	setInterval(shopifyGetCall,10000);
 	setInterval(getERPData,10000);
 	//setInterval(shopifyPostCall,10000);
-	setInterval(compareData,1000);
+	setInterval(compareDataInit,1000);
 }
 
 module.exports = {startCalls};
