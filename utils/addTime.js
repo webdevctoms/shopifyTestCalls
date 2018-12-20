@@ -7,6 +7,13 @@ const addSeconds = function(time,inc){
 	return finalTime;
 };
 
+const addTime = function(time,inc){
+	let finalTime = time + inc;
+
+	return finalTime;
+};
+
+
 const subtractTime = function(time1,time2,currentTime){
 	const diff1 = Math.abs(currentTime - time1);
 	const diff2 = Math.abs(currentTime - time2);
@@ -21,4 +28,4 @@ const subtractTime = function(time1,time2,currentTime){
 	}
 }
 
-module.exports = {addSeconds,subtractTime};
+module.exports = {addSeconds,subtractTime,addTime};
