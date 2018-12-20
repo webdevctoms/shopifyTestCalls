@@ -1,6 +1,7 @@
 require('dotenv').config();
 const request = require('request');
-const {SURL,USERK,USERP} = require('./config');
+const {SURL,USERK,USERP,endURL,cKey} = require('./config');
+const {sortData} = require('./utils/sortData');
 let counter = 0;
 /**********************************************
 
@@ -9,6 +10,7 @@ retrieve 250 objects with one api call
 Use web hooks?
 	does this need to also send data to ERP system?
 	or can we just make request to ERP and then use code on ERP side to update
+	could allow creation of products on shopify and testThing
 
 ************************************************/
 
@@ -36,6 +38,28 @@ function shopifyCallbackGet(error, response,body){
 	else{
 		//just stop functioning if api error
 		console.log("failed call", parsedBody.errors);
+	}
+}
+
+function erpCallbackGet(error,response,body){
+	try{
+		const parsedBody = JSON.parse(body);
+		if(error){
+			console.log("erp error ",error);
+			throw "unknown error";
+		}
+		//handle errors from the mock server
+		//console.log("erp response ",response);
+		if(parsedBody.err){
+			console.log("custom error",parsedBody);
+			throw "custom error"
+		}
+		console.log("erp data ",parsedBody);
+		const sortedBody = sortData(parsedBody.data);
+		console.log("sorted data", sortedBody);
+	}
+	catch(err){
+		console.log("A error occured",err);
 	}
 }
 //initial shopify get request
@@ -85,14 +109,34 @@ function shopifyPostCall(){
 
 	request(options,shopifyCallbackPost);
 }
+
+function getERPData(){
+	options = {
+		method:"GET",
+		url:endURL,
+		headers:{
+			"Authorization": cKey
+
+		}
+	};
+
+	request(options,erpCallbackGet);
+}
+
 //test function to try running code while calls are being made
 function testThing(str){
 	console.log("test thing" + str);
 }
 
+function afterGet(str){
+	console.log("test after get" + str);
+}
+//need to make get request to ERP and shopify compare them, then make post/put requests to shopify, so on success of get calls make post call
+//could have one setinterval then on each success make get req, post, then put
 function startCalls(){
 	setInterval(shopifyGetCall,10000);
-	setInterval(shopifyPostCall,10000);
+	setInterval(getERPData,10000);
+	//setInterval(shopifyPostCall,10000);
 	//setInterval(testThing, 2000);
 }
 

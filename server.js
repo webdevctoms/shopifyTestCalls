@@ -16,7 +16,6 @@ function runServer(databaseUrl, port = PORT) {
         resolve();
       })
         .on('error', err => {
-          mongoose.disconnect();
           reject(err);
         });
     });
@@ -24,7 +23,7 @@ function runServer(databaseUrl, port = PORT) {
 }
 
 function closeServer() {
-  return mongoose.disconnect().then(() => {
+
     return new Promise((resolve, reject) => {
       console.log('Closing server');
       server.close(err => {
@@ -34,7 +33,7 @@ function closeServer() {
         resolve();
       });
     });
-  });
+
 }
 
 if (require.main === module) {
