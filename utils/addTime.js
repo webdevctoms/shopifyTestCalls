@@ -7,4 +7,18 @@ const addSeconds = function(time,inc){
 	return finalTime;
 };
 
-module.exports = {addSeconds};
+const subtractTime = function(time1,time2,currentTime){
+	const diff1 = Math.abs(currentTime - time1);
+	const diff2 = Math.abs(currentTime - time2);
+
+	if(diff1 > diff2){
+		//if time 1 took less time than time 2
+		return false
+	}
+	else{
+		//if time 2 took less time or equal time than time1
+		return true
+	}
+}
+
+module.exports = {addSeconds,subtractTime};
