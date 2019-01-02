@@ -5,12 +5,12 @@ const {sortData} = require('./utils/sortData');
 const {addSeconds,subtractTime,addTime} = require('./utils/addTime');
 let counter = 0;
 //use these to store the data from get calls
-let erpSortedData;
-let shopifySortedData;
+let erpSortedData = [];
+let shopifySortedData = [];
 let executeTime ={updated:true};
 //update/post arrays for the different shopify calls
-let putData;
-let postData;
+let putData = [];
+let postData = [];
 
 /**********************************************
 This version running off of running async get request for ERP and Shopify
@@ -147,31 +147,96 @@ function getERPData(){
 	request(options,erpCallbackGet);
 }
 
+function compareData2(){
+	//arr1 has to be ERP and arr2 has to be Shopify data, because of how the object naming,will have to change when using real ERP API
+
+	let checkedCounter = 0;
+	console.log("erp array",erpSortedData);
+	for(let i = 0;i < erpSortedData.length - 1; i++){
+		
+		if (checkedCounter === shopifySortedData.length - 1){
+			postData.push(erpSortedData[i]);
+			continue;
+		}
+		
+		console.log("erp in for loop: ",erpSortedData[i].name.toLowerCase());
+		for(let k =0; k < shopifySortedData.length -1; k++){
+			console.log("shopify in for loop: ",shopifySortedData[k].title.toLowerCase());
+			console.log("erp in for loop: ",erpSortedData[i].name.toLowerCase());
+			if(shopifySortedData[k].productChecked){
+				console.log("skipping----------");
+				continue;
+			}
+			//means data exists in both
+			else if(shopifySortedData[k].title.toLowerCase() === erpSortedData[i].name.toLowerCase()){
+				console.log("found");
+				shopifySortedData[k].productChecked = true;
+				checkedCounter++;
+				putData.push(erpSortedData[i]);
+				break;
+			}
+			else if(shopifySortedData[k].title.toLowerCase() < erpSortedData[i].name.toLowerCase()){
+				//this condition means that the name from shopifySortedData does not come alphabetically after the current erpSortedData item name therefore this would be new data to add to shopify
+				console.log("erp data comes alphabetically after continue searching------------");
+				shopifySortedData[k].productChecked = true;
+				checkedCounter++;
+				continue;
+			}
+			//else if()
+			
+			else if(!(shopifySortedData[k].title.toLowerCase() < erpSortedData[i].name.toLowerCase())){
+				//this condition means that the arr2 name comes alphabetically after the current item. Therefore should be able to continue to next k,if the name has not been found yet
+				//means thing does not come alphabetically after
+				console.log("data pushed to post data-----------");
+				postData.push(erpSortedData[i]);
+				break;
+			}
+			
+		}
+	}
+	console.log("This is the put Data =========",putData);
+	console.log("This is the post Data =========",postData);
+}
+
 function compareData(arr1,arr2){
 	//arr1 has to be ERP and arr2 has to be Shopify data, because of how the object naming,will have to change when using real ERP API
-	let checkedCounter = 0;
-	for(let i = 0;i < arr1.length; i++){
 
+	//let checkedCounter = 0;
+	console.log("erp array",arr1);
+	for(let i = 0;i < arr1.length; i++){
+		/*
 		if (checkedCounter === arr2.length - 1){
 
 		}
-
+		*/
+		console.log("erp in for loop: ",arr1[i].name.toLowerCase());
 		for(let k =0; k < arr2.length; k++){
+			console.log("shopify in for loop: ",arr2[k].title.toLowerCase());
+			console.log("erp in for loop: ",arr1[i].name.toLowerCase());
 			if(arr2[k].productChecked){
 				continue;
 			}
-			else if(arr2[k].title === arr1[i].name){
+			//means data exists in both
+			else if(arr2[k].title.toLowerCase() === arr1[i].name.toLowerCase()){
+				console.log("found");
 				arr2[k].productChecked = true;
 				putData.push(arr1[i]);
 			}
-			else if(!(arr2[k].title < arr1[i].name)){
-				//this condition means that the name from arr2 does not come alphabetically before the current arr1 item name
+			else if(arr2[k].title.toLowerCase() < arr1[i].name.toLowerCase()){
+				//this condition means that the name from arr2 does not come alphabetically after the current arr1 item name therefore this would be new data to add to shopify
+				arr2[k].productChecked = true;
+				postData.push(arr1[i]);
 			}
-			else if(arr2[k].title < arr1[i].name){
-				//this condition means that the arr2 name comes alphabetically after the current item. Therefore should be able to break the loop,if the name has not been found yet
+			
+			else if(!(arr2[k].title.toLowerCase() < arr1[i].name.toLowerCase())){
+				//this condition means that the arr2 name comes alphabetically after the current item. Therefore should be able to continue to next k,if the name has not been found yet
+				continue;
 			}
+			
 		}
 	}
+	console.log("This is the put Data =========",putData);
+	console.log("This is the post Data =========",postData);
 }
 
 function compareDataInit(){
@@ -204,6 +269,7 @@ function compareDataInit(){
 
 		if(currentTime === executeTime.time){
 			console.log("time to compare data");
+			compareData(erpSortedData,shopifySortedData);
 			executeTime.updated = true;
 		}
 
@@ -228,7 +294,7 @@ function startCalls(){
 	setInterval(shopifyGetCall,10000);
 	setInterval(getERPData,10000);
 	//setInterval(shopifyPostCall,10000);
-	setInterval(compareDataInit,1000);
+	setTimeout(compareData2,15000);
 }
 
 module.exports = {startCalls};
