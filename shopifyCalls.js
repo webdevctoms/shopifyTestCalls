@@ -226,6 +226,11 @@ function compareData(arr1,arr2){
 				checkedCounter++;
 				break;
 			}
+			else if(k === arr2.length - 2){
+				console.log("End reached for checking Shopiy data-------------");
+				postData.push(arr1[i]);
+				continue;
+			}
 			else if(arr2[k].title.toLowerCase() < arr1[i].name.toLowerCase()){
 				//this condition means that the name from arr2 does not come alphabetically after the current arr1 item name therefore this would be new data to add to shopify
 				console.log("erp data comes alphabetically after continue searching------------");
@@ -240,7 +245,7 @@ function compareData(arr1,arr2){
 				postData.push(arr1[i]);
 				break;
 			}
-			
+					
 		}
 	}
 	console.log("This is the put Data =========",putData);
