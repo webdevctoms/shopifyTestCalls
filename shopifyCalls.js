@@ -146,7 +146,7 @@ function getERPData(){
 
 	request(options,erpCallbackGet);
 }
-
+/*
 function compareData2(){
 	//arr1 has to be ERP and arr2 has to be Shopify data, because of how the object naming,will have to change when using real ERP API
 
@@ -197,40 +197,48 @@ function compareData2(){
 	console.log("This is the put Data =========",putData);
 	console.log("This is the post Data =========",postData);
 }
-
+*/
 function compareData(arr1,arr2){
 	//arr1 has to be ERP and arr2 has to be Shopify data, because of how the object naming,will have to change when using real ERP API
 
-	//let checkedCounter = 0;
+	let checkedCounter = 0;
 	console.log("erp array",arr1);
-	for(let i = 0;i < arr1.length; i++){
-		/*
+	for(let i = 0;i < arr1.length - 1; i++){
+		
 		if (checkedCounter === arr2.length - 1){
-
+			postData.push(arr1[i]);
+			continue;
 		}
-		*/
+		
 		console.log("erp in for loop: ",arr1[i].name.toLowerCase());
-		for(let k =0; k < arr2.length; k++){
+		for(let k =0; k < arr2.length - 1; k++){
 			console.log("shopify in for loop: ",arr2[k].title.toLowerCase());
 			console.log("erp in for loop: ",arr1[i].name.toLowerCase());
 			if(arr2[k].productChecked){
+				console.log("Skipping-----------")
 				continue;
 			}
 			//means data exists in both
 			else if(arr2[k].title.toLowerCase() === arr1[i].name.toLowerCase()){
-				console.log("found");
+				console.log("found-------------");
 				arr2[k].productChecked = true;
 				putData.push(arr1[i]);
+				checkedCounter++;
+				break;
 			}
 			else if(arr2[k].title.toLowerCase() < arr1[i].name.toLowerCase()){
 				//this condition means that the name from arr2 does not come alphabetically after the current arr1 item name therefore this would be new data to add to shopify
+				console.log("erp data comes alphabetically after continue searching------------");
 				arr2[k].productChecked = true;
-				postData.push(arr1[i]);
+				checkedCounter++;
+				continue;
 			}
 			
 			else if(!(arr2[k].title.toLowerCase() < arr1[i].name.toLowerCase())){
 				//this condition means that the arr2 name comes alphabetically after the current item. Therefore should be able to continue to next k,if the name has not been found yet
-				continue;
+				console.log("data pushed to post data-----------");
+				postData.push(arr1[i]);
+				break;
 			}
 			
 		}
@@ -269,7 +277,9 @@ function compareDataInit(){
 
 		if(currentTime === executeTime.time){
 			console.log("time to compare data");
-			compareData(erpSortedData,shopifySortedData);
+			let copyERPSorted = erpSortedData.slice();
+			let copyShopifySortedData = shopifySortedData.slice();
+			compareData(copyERPSorted,copyShopifySortedData);
 			executeTime.updated = true;
 		}
 
@@ -294,7 +304,8 @@ function startCalls(){
 	setInterval(shopifyGetCall,10000);
 	setInterval(getERPData,10000);
 	//setInterval(shopifyPostCall,10000);
-	setTimeout(compareData2,15000);
+	//setTimeout(compareData2,15000);
+	setInterval(compareDataInit,1000);
 }
 
 module.exports = {startCalls};
