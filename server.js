@@ -6,7 +6,7 @@ const {startCalls} = require('./shopifyCalls');
 let server;
 
 
-function runServer(databaseUrl, port = PORT) {
+function runServer(port = PORT) {
 
   return new Promise((resolve, reject) => {
    

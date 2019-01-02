@@ -200,6 +200,8 @@ function compareData2(){
 */
 function compareData(arr1,arr2){
 	//arr1 has to be ERP and arr2 has to be Shopify data, because of how the object naming,will have to change when using real ERP API
+	let returnPutData = [];
+	let returnPostData = [];
 
 	let checkedCounter = 0;
 	console.log("erp array",arr1);
@@ -222,13 +224,13 @@ function compareData(arr1,arr2){
 			else if(arr2[k].title.toLowerCase() === arr1[i].name.toLowerCase()){
 				console.log("found-------------");
 				arr2[k].productChecked = true;
-				putData.push(arr1[i]);
+				returnPutData.push(arr1[i]);
 				checkedCounter++;
 				break;
 			}
 			else if(k === arr2.length - 2){
 				console.log("End reached for checking Shopiy data-------------");
-				postData.push(arr1[i]);
+				returnPostData.push(arr1[i]);
 				continue;
 			}
 			else if(arr2[k].title.toLowerCase() < arr1[i].name.toLowerCase()){
@@ -242,14 +244,18 @@ function compareData(arr1,arr2){
 			else if(!(arr2[k].title.toLowerCase() < arr1[i].name.toLowerCase())){
 				//this condition means that the arr2 name comes alphabetically after the current item. Therefore should be able to continue to next k,if the name has not been found yet
 				console.log("data pushed to post data-----------");
-				postData.push(arr1[i]);
+				returnPostData.push(arr1[i]);
 				break;
 			}
 					
 		}
 	}
-	console.log("This is the put Data =========",putData);
-	console.log("This is the post Data =========",postData);
+	console.log("This is the put Data =========",JSON.stringify(returnPutData));
+	console.log("This is the post Data =========",JSON.stringify(returnPostData));
+	return {
+		returnPostData,
+		returnPutData
+	}
 }
 
 function compareDataInit(){
@@ -284,7 +290,11 @@ function compareDataInit(){
 			console.log("time to compare data");
 			let copyERPSorted = erpSortedData.slice();
 			let copyShopifySortedData = shopifySortedData.slice();
-			compareData(copyERPSorted,copyShopifySortedData);
+			let newData = compareData(copyERPSorted,copyShopifySortedData);
+			putData = newData.returnPutData;
+			postData = newData.returnPostData;
+			console.log("Final post data after function --------", postData);
+			console.log("Final put data after function --------", putData);
 			executeTime.updated = true;
 		}
 
@@ -313,4 +323,4 @@ function startCalls(){
 	setInterval(compareDataInit,1000);
 }
 
-module.exports = {startCalls};
+module.exports = {startCalls,compareData};
