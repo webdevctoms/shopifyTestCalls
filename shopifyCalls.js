@@ -204,7 +204,6 @@ function compareData(arr1,arr2){
 	let returnPostData = [];
 
 	let checkedCounter = 0;
-	console.log("erp array",arr1);
 	for(let i = 0;i < arr1.length - 1; i++){
 		
 		if (checkedCounter === arr2.length - 1){
@@ -250,12 +249,12 @@ function compareData(arr1,arr2){
 					
 		}
 	}
-	console.log("This is the put Data =========",JSON.stringify(returnPutData));
-	console.log("This is the post Data =========",JSON.stringify(returnPostData));
+	//console.log("This is the put Data =========",JSON.stringify(returnPutData));
+	//console.log("This is the post Data =========",JSON.stringify(returnPostData));
 	return {
 		returnPostData,
 		returnPutData
-	}
+	};
 }
 
 function compareDataInit(){
@@ -315,6 +314,7 @@ function afterGet(str){
 }
 //need to make get request to ERP and shopify compare them, then make post/put requests to shopify, so on success of get calls make post call
 //could have one setinterval then on each success make get req, post, then put
+//need to consider garbage collection, possibly when one done sending data explicitly set the array to length 0 or null, because it may not be garbage collected ever
 function startCalls(){
 	setInterval(shopifyGetCall,10000);
 	setInterval(getERPData,10000);
